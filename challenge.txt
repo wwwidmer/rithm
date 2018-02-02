@@ -18,7 +18,9 @@ than fewer features using a stack you’re just starting to learn.
 Core Features (User Stories)
 As a user, I can upvote a joke if I find it hilarious.
 As a user, I can downvote a joke if I find it lame.
-When the page loads, as a user I can see a list of the top 5 jokes based all user’s votes and the bottom 5 jokes (based on downvotes).
+When the page loads, as a user I can see a list of the top 5 jokes
+based all user’s votes and the bottom 5 jokes (based on downvotes).
+
 When the page loads, as a user I can see a random list of 20 jokes, with no duplicates.
 As a user, I can click a button to generate a new list of random quotes (again, with no duplicates).
 
