@@ -1,12 +1,24 @@
-<html>
-  <head>
-    <meta charset="utf-8">
-    <!-- Latest compiled and minified bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
-    <title>Joke Vote</title>
-  </head>
-  <body>
-    <div id="content" />
-    <script src="dist/bundle.js" type="text/javascript"></script>
-  </body>
-</html>
+{% extends "base.html" %}
+{% block scripts %}
+<script>
+  const jokes = {{ jokes | tojson }};
+
+
+</script>
+{% endblock %}
+{% block content %}
+  <div id="content">
+    <div class="container">
+      <div class="row">
+        <div id="top" class="col-md-3">
+        </div>
+        <div id="bottom" class="col-md-3">
+        </div>
+        <div id="random" class="col-md-3">
+
+          <a class="btn btn-primary" href="#" role="button">Get more random</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
