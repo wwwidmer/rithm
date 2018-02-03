@@ -61,4 +61,4 @@ class JokeAPI(object):
         while len(self.jokes_by_id) < n:
             self.save_by_id(request_url)
 
-        return self.jokes_by_id
+        return [{'id': j_id, 'joke': joke} for j_id, joke in self.jokes_by_id.items()]

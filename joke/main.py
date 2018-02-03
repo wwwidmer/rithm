@@ -20,7 +20,6 @@ def dashboard_jokes():
         'bottom': joke_api.get_bottom_n(5),
         'random': joke_api.get_n_jokes_unique(1)
     }
-
     return jokes
 
 

@@ -1,23 +1,10 @@
 {% extends "base.html" %}
 {% block scripts %}
-<script>
-  const jokes = {{ jokes | tojson }};
-
-
-</script>
 {% endblock %}
 {% block content %}
   <div id="content">
     <div class="container">
       <div class="row">
-        <div id="top" class="col-md-3">
-        </div>
-        <div id="bottom" class="col-md-3">
-        </div>
-        <div id="random" class="col-md-3">
-
-          <a class="btn btn-primary" href="#" role="button">Get more random</a>
-        </div>
       </div>
     </div>
   </div>

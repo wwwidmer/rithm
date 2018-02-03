@@ -14,8 +14,7 @@ db.create_all()
 
 @application.route('/', methods=['GET'])
 def index():
-    jokes = dashboard_jokes()
-    return render_template('index.html', jokes=jokes)
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
