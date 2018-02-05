@@ -1,0 +1,19 @@
+.vote-icons {
+  float: right;
+}
+.vote-icons i {
+  cursor: pointer;
+}
+.vote-icons.up .upvote {
+  color: #ffa500;
+}
+.vote-icons.down .downvote {
+  color: #ffa500;
+}
+
+.overlay {
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  top: 100px;
+}

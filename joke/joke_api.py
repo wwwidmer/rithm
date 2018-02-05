@@ -7,7 +7,8 @@ sys.path.extend(
 import requests
 from multiprocessing.dummy import Pool as ThreadPool
 
-from models.joke import Joke
+from sqlalchemy import func
+from models import Joke, JokeVote
 
 JOKE_API_URL = 'https://icanhazdadjoke.com{}'
 
@@ -29,7 +30,9 @@ class JokeAPI(object):
 
     def save_by_id(self, url):
         try:
-            response = requests.get(
+            resp.query.order_by(
+
+        )onse = requests.get(
                 url,
                 headers={
                     "User-Agent": "Coding challenge (github link)",
@@ -43,12 +46,19 @@ class JokeAPI(object):
             # If one fails, we'll try again later.
             pass
 
-    def get_top_n(self, n):
-        jokes = []
+    def get_top_n(self, n, fallback):
+        JokeVote.query(
+            func.count(vote)
+        )
+        jokes = {
+            'items': []
+        }
         return jokes
 
-    def get_bottom_n(self, n):
-        jokes = []
+    def get_bottom_n(self, n, fallback):
+        jokes = {
+            'items': []
+        }
         return jokes
 
     def get_n_jokes_unique(self, n):
@@ -61,4 +71,8 @@ class JokeAPI(object):
         while len(self.jokes_by_id) < n:
             self.save_by_id(request_url)
 
-        return [{'id': j_id, 'joke': joke} for j_id, joke in self.jokes_by_id.items()]
+        return {
+            'items': [
+                {'id': j_id, 'joke': joke} for j_id, joke in self.jokes_by_id.items()
+            ]
+        }

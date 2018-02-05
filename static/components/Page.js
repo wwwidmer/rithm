@@ -5,45 +5,77 @@ import { connect } from 'react-redux';
 import { getRandomJokes, getInitialJokes, vote } from '../actions/jokes';
 
 import Jokelist from './Joke';
+import Error from './Error';
 
 class Page extends Component {
+    constructor(props){
+    	super(props);
+    	this.state = {};
+
+      this.vote = this.vote.bind(this)
+      this.getRandomJokes = this.getRandomJokes.bind(this)
+    }
+
     componentDidMount() {
-        this.props.getInitialJokes();
+        this.props.getInitialJokes(
+          this.props.top_jokes.lastFetch
+        );
     }
 
     vote (id, vote) {
         this.props.vote(id, vote);
     }
 
-    getRandomJokes (){
+    getRandomJokes () {
         this.props.getRandomJokes();
     }
 
     render() {
-        const { top_jokes, bottom_jokes, random_jokes } = this.props;
-        console.log(this.props)
+        const { top_jokes, bottom_jokes, random_jokes, loading, error } = this.props;
+        const disabledClass = loading ? 'disabled': '';
         return (
-            <div className="container">
-              <div className="row">
-                <Jokelist id="top" headerText="5 Best jokes" vote={this.vote} jokes={top_jokes} />
-                <Jokelist id="bottom" headerText="5 Worst jokes" vote={this.vote} jokes={bottom_jokes} />
-                <Jokelist id="random" headerText="20 Random jokes" vote={this.vote} jokes={random_jokes}
-                  extra={
-                    <a className="btn btn-primary" href="#" role="button" onClick={this.getRandomJokes}>
-                      Show more
-                    </a>
-                  }
-                />
-              </div>
-            </div>
+          <div className="row">
+            {error && <Error error={error} />}
+            {loading && <i className='overlay fa fa-refresh fa-spin fa-4x' />}
+            <Jokelist id="top" headerText="Best jokes" vote={this.vote} jokes={top_jokes.items} />
+            <Jokelist id="bottom" headerText="Worst jokes" vote={this.vote} jokes={bottom_jokes.items} />
+            <Jokelist id="random" headerText="Random jokes" vote={this.vote} jokes={random_jokes.items}
+              extra={
+                <a className={`btn btn-primary ${disabledClass}`} href="#" role="button"
+                  onClick={this.getRandomJokes}
+                >
+                  Show more
+                </a>
+              }
+            />
+          </div>
         );
     }
 }
 
 function mapStateToProps(state) {
-    const { top_jokes, bottom_jokes, random_jokes } = state.fetch_jokes_reducer;
+    function merge(jokes, latest) {
+      for (var i = 0; i< jokes.items.length; i++) {
+        jokes.items[i] = latest[jokes.items[i].id]
+      }
+    }
+
+    const { fetch_jokes, jokes } = state;
+    const { top_jokes,
+      bottom_jokes,
+      random_jokes,
+      loading,
+      error
+    } = fetch_jokes;
+
+    merge(random_jokes, jokes)
+    merge(top_jokes, jokes)
+    merge(bottom_jokes, jokes)
+
     return {
-      top_jokes, bottom_jokes, random_jokes
+      top_jokes, bottom_jokes, random_jokes,
+      loading, error,
+      jokes
     }
 }
 

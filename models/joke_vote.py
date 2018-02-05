@@ -1,10 +1,8 @@
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+from .db import db
 
 
 class JokeVote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    joke_id = db.Column(db.String)
     client_id = db.Column(db.String)
-    up_vote = db.Column(db.Boolean)
+    joke_id = db.Column(db.String, db.ForeignKey('joke.id'))
+    vote = db.Column(db.Boolean)
