@@ -6,3 +6,6 @@ class JokeVote(db.Model):
     client_id = db.Column(db.String)
     joke_id = db.Column(db.String, db.ForeignKey('joke.id'))
     vote = db.Column(db.Boolean)
+
+    def __repr__(self):
+        return '{} {}'.format(self.joke_id, self.vote)

@@ -15,7 +15,7 @@ class Joke extends Component {
 
   render() {
     const { joke } = this.props;
-    const upvote = joke.vote ? 'up': (joke.vote !== undefined ? 'down': '')
+    const upvote = joke.vote ? 'up': (joke.vote !== null ? 'down': '')
     return (
       <li className="list-group-item d-inline-block">
         <div className={`vote-icons ${upvote}`}>

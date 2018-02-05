@@ -14,12 +14,12 @@ from .joke_api import JokeAPI
 from models.db import db
 from models.joke_vote import JokeVote
 
-def dashboard_jokes():
-    joke_api = JokeAPI()
+def dashboard_jokes(user_id):
+    joke_api = JokeAPI(user_id)
     random = joke_api.get_n_jokes_unique(20)
     jokes = {
-        'top': joke_api.get_top_n(5, fallback=random),
-        'bottom': joke_api.get_bottom_n(5, fallback=random),
+        'top': joke_api.get_top_n(5),
+        'bottom': joke_api.get_bottom_n(6),
         'random': random
     }
     return jokes
@@ -27,14 +27,14 @@ def dashboard_jokes():
 
 @joke_blueprint.route('/')
 def index():
-    response = jsonify(dashboard_jokes())
+    response = jsonify(dashboard_jokes(request.remote_addr))
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 @joke_blueprint.route('/random')
 def get_random():
     response = jsonify({
-        'random': JokeAPI().get_n_jokes_unique(20)
+        'random': JokeAPI(request.remote_addr).get_n_jokes_unique(20)
     })
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response

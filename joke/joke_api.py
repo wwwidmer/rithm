@@ -6,8 +6,11 @@ sys.path.extend(
 
 import requests
 from multiprocessing.dummy import Pool as ThreadPool
+from sqlalchemy import desc, func
 
-from sqlalchemy import func
+from collections import defaultdict
+
+from models.db import db
 from models import Joke, JokeVote
 
 JOKE_API_URL = 'https://icanhazdadjoke.com{}'
@@ -24,18 +27,17 @@ FETCH_SUFFIX = '/j/{id}'
 '''
 
 class JokeAPI(object):
-    def __init__(self, max_threads=None):
+    def __init__(self, user_id=None, max_threads=None):
         self.max_threads = max_threads or 10
         self.jokes_by_id = {}
+        self.user_id = user_id
 
     def save_by_id(self, url):
         try:
-            resp.query.order_by(
-
-        )onse = requests.get(
+            response = requests.get(
                 url,
                 headers={
-                    "User-Agent": "Coding challenge (github link)",
+                    "User-Agent": "Coding challenge (https://github.com/wwwidmer/rithm)",
                     "Accept": "application/json"
                 }
             )
@@ -46,18 +48,48 @@ class JokeAPI(object):
             # If one fails, we'll try again later.
             pass
 
-    def get_top_n(self, n, fallback):
-        JokeVote.query(
-            func.count(vote)
-        )
+    def get_top_n(self, n):
+        top_votes = db.session.query(
+            JokeVote.joke_id,
+            Joke.joke,
+            func.count(JokeVote.vote)
+        ).filter(
+            JokeVote.vote
+        ).join(
+            Joke, Joke.id == JokeVote.joke_id
+        ).order_by(
+            desc(func.count(JokeVote.vote))
+        ).group_by(
+            JokeVote.joke_id
+        ).limit(n).all()
+        voted = defaultdict(lambda: None)
         jokes = {
-            'items': []
+            'items': [
+                {'id': res[0], 'joke': res[1], 'vote': voted[res[0]]} for res in top_votes
+            ]
         }
+
         return jokes
 
-    def get_bottom_n(self, n, fallback):
+    def get_bottom_n(self, n):
+        top_votes = db.session.query(
+            JokeVote.joke_id,
+            Joke.joke,
+            func.count(JokeVote.vote)
+        ).filter(
+            JokeVote.vote == False
+        ).join(
+            Joke, Joke.id == JokeVote.joke_id
+        ).order_by(
+            desc(func.count(JokeVote.vote))
+        ).group_by(
+            JokeVote.joke_id
+        ).limit(n).all()
+        voted = defaultdict(lambda: None)
         jokes = {
-            'items': []
+            'items': [
+                {'id': res[0], 'joke': res[1], 'vote': voted[res[0]]} for res in top_votes
+            ]
         }
         return jokes
 
@@ -71,8 +103,22 @@ class JokeAPI(object):
         while len(self.jokes_by_id) < n:
             self.save_by_id(request_url)
 
+        items = []
+        voted = defaultdict(lambda: None)
+        for j_id, joke in self.jokes_by_id.items():
+            items.append(
+                {'id': j_id, 'joke': joke, 'vote': voted[j_id]}
+            )
+
+            try:
+                joke_in_db = Joke.query.get(j_id)
+                if not joke:
+                    db.session.add(Joke(id=j_id, joke=joke))
+                    db.session.commit()
+            except Exception as e:
+                print (e)
+
+
         return {
-            'items': [
-                {'id': j_id, 'joke': joke} for j_id, joke in self.jokes_by_id.items()
-            ]
+            'items': items
         }
